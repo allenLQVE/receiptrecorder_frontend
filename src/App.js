@@ -2,46 +2,64 @@ import React, { useState, useEffect } from 'react';
 import axios from "axios";
 import './App.css';
 
-import { Table } from 'reactstrap'
+import { RecordTable } from './components/RecordTable';
+import { RecordModal } from './components/RecordModal';
+import { Button, Container, Row, Col, } from 'reactstrap';
 
 function App() {
-    const [data, setData] = useState();
+    const [records, setRecords] = useState();
+    const [items, setItems] = useState();
+    const [stores, setStores] = useState();
+    const [recordModal, setRecordModal] = useState(false);
 
     useEffect(() => {
         axios.get('http://localhost:8000/api/records/').then(
             response => {
-                setData(response.data);
+                setRecords(response.data);
+            }
+        ).catch(error => {
+            console.error(error);
+        })
+        axios.get('http://localhost:8000/api/items/').then(
+            response => {
+                setItems(response.data);
+            }
+        ).catch(error => {
+            console.error(error);
+        })
+        axios.get('http://localhost:8000/api/stores/').then(
+            response => {
+                setStores(response.data);
             }
         ).catch(error => {
             console.error(error);
         })
     }, [])
 
+    const toggle = () => setRecordModal(!recordModal);
+
     return (
-        <div className='records'>
-            <h1>Records</h1>
-            <Table bordered striped size="sm">
-                <thead>
-                    <tr>
-                        <th>Item Name</th>
-                        <th>Store Name</th>
-                        <th>Purchase Date</th>
-                        <th>Cost</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {data?.map((data) => (
-                        <tr>
-                            <td>{data.item.name}</td>
-                            <td>{data.store.name}</td>
-                            <td>{data.purchaseDate}</td>
-                            <td>${data.price}</td>
-                            {/* add a col for removing or update record */}
-                        </tr>
-                    ))}
-                </tbody>
-            </Table>
-        </div>
+        <Container>
+            <div className='records'>
+                <Container>
+                    <Row className="mt-2">
+                        <Col>
+                            <h1>Records</h1>
+                        </Col>
+                        <Col sm={{offset:1}}>
+                            <Button color="primary" className="mt-2" onClick={toggle}>Create</Button>
+                        </Col>
+                    </Row>
+                    <Row>
+                        {records ? <RecordTable data={records}/> : null}
+                    </Row>
+                </Container>
+            </div>
+            {(items && stores) ? (
+                <RecordModal itemList={items} storeList={stores} isOpen={recordModal} toggle={toggle} setRecords={setRecords}/>
+            ): null}
+            
+        </Container>
     );
 }
 
