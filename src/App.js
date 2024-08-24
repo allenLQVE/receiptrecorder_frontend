@@ -4,13 +4,18 @@ import './App.css';
 
 import { RecordTable } from './components/RecordTable';
 import { RecordModal } from './components/RecordModal';
-import { Button, Container, Row, Col, } from 'reactstrap';
+import { RecordProvider } from './context/RecordContext';
+import { Button } from 'reactstrap';
 
 function App() {
+    // data from api
     const [records, setRecords] = useState();
     const [items, setItems] = useState();
     const [stores, setStores] = useState();
+
+    // Modal for creating/editing record
     const [recordModal, setRecordModal] = useState(false);
+    const [isCreate, setIsCreate] = useState(true);
 
     useEffect(() => {
         axios.get('http://localhost:8000/api/records/').then(
@@ -38,28 +43,35 @@ function App() {
 
     const toggle = () => setRecordModal(!recordModal);
 
+    const openRecordModal = (create) => {
+        setIsCreate(create)
+        toggle();
+    }
+
     return (
-        <Container>
-            <div className='records'>
-                <Container>
-                    <Row className="mt-2">
-                        <Col>
-                            <h1>Records</h1>
-                        </Col>
-                        <Col sm={{offset:1}}>
-                            <Button color="primary" className="mt-2" onClick={toggle}>Create</Button>
-                        </Col>
-                    </Row>
-                    <Row>
-                        {records ? <RecordTable data={records}/> : null}
-                    </Row>
-                </Container>
+        <RecordProvider>
+            <div className='container'>
+                <div className='records'>
+                    <div className='container'>
+                        <div className="row mt-2">
+                            <div className='col-11'>
+                                <h1>Records</h1>
+                            </div>
+                            <div className='col-1'>
+                                <Button color="primary" className="mt-2" onClick={() => {toggle(); setIsCreate(true)}}>Create</Button>
+                            </div>
+                        </div>
+                        <div className="row">
+                            {records ? <RecordTable records={records} setRecords={setRecords} openRecordModal={openRecordModal}/> : null}
+                        </div>
+                    </div>
+                </div>
+                {(items && stores) ? (
+                    <RecordModal itemList={items} storeList={stores} isOpen={recordModal} toggle={toggle} setRecords={setRecords} isCreate={isCreate}/>
+                ): null}
+                
             </div>
-            {(items && stores) ? (
-                <RecordModal itemList={items} storeList={stores} isOpen={recordModal} toggle={toggle} setRecords={setRecords}/>
-            ): null}
-            
-        </Container>
+        </RecordProvider>
     );
 }
 

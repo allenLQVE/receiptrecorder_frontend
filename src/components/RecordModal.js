@@ -1,5 +1,6 @@
+/* eslint-disable eqeqeq */
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
     Button,
     Modal,
@@ -11,79 +12,86 @@ import {
     Input,
     Label,
 } from "reactstrap";
+import { RecordContext } from '../context/RecordContext';
 
-export const RecordModal = ({ itemList, storeList, isOpen, toggle, setRecords }) =>{
-    const [item, setItem] = useState('');
-    const [store, setStore] = useState('');
-    const [purchaseDate, setPurchaseDate] = useState();
-    const [price, setPrice] = useState(0);
-    const [saving, setSaving] = useState(0);
-    const [units, setUnits] = useState(1);
-    const [detail, setDetail] = useState('');
+export const RecordModal = ({ itemList, storeList, isOpen, toggle, setRecords, isCreate }) =>{
+    const recordContext = useContext(RecordContext)
+
+    // check if the input is valid
     const [invalidItem, setItemValid] = useState(false);
     const [invalidStore, setStoreValid] = useState(false);
     const [invalidDate, setDateValid] = useState(false);
 
-    const saveRecord = (e) =>{
-        e.preventDefault();
+    const resetEverything = () =>{
+        recordContext.reset();
+        setItemValid(false);
+        setStoreValid(false);
+        setDateValid(false);
+        toggle();
+    }
 
+    const saveRecord = (e) =>{
         // check if the record has required fields
         var invalid = false;
-        if(store === ""){
+        if(recordContext.store == ""){
             setStoreValid(true);
             invalid = true;
         }
-        if(item === ""){
+        if(recordContext.item == ""){
             setItemValid(true);
             invalid = true;
         }
-        if(purchaseDate==null){
+        if(recordContext.purchaseDate == null){
             setDateValid(true);
             invalid = true;
         }
 
         if(invalid){
             return;
-        } 
+        }
 
-        // create the new record
-        axios.post("http://localhost:8000/api/records/", {
-            item: item,
-            store: store,
-            purchaseDate: purchaseDate,
-            price: price,
-            saving: saving,
-            units: units,
-            detail: detail,
-        }).then(
-            response => {
-                setRecords(prev => [...prev, response.data]);
-                
-            }
-        ).catch(error => {
-            console.error(error);
-        })
+        const data = {
+            item: recordContext.item,
+            store: recordContext.store,
+            purchaseDate: recordContext.purchaseDate,
+            price: recordContext.price,
+            saving: recordContext.saving,
+            units: recordContext.units,
+            detail: recordContext.detail,
+        }
+
+        if(isCreate){
+            // create the new record
+            axios.post("http://localhost:8000/api/records/", data).then(
+                response => {
+                    setRecords(prev => [...prev, response.data]);
+                }
+            ).catch(error => {
+                console.error(error);
+            })
+        } else {
+            data['id'] = recordContext.id;
+
+            axios.put(`http://localhost:8000/api/records/${recordContext.id}/`, data).then(
+                response => {
+                    setRecords(records => records.map(record => record.id == recordContext.id ? response.data : record))
+                }
+            ).catch(error =>{
+                console.error(error)
+            })
+        }
 
         toggle();
 
         // set values back to default
-        setItem('');
-        setStore('');
-        setPurchaseDate(null);
-        setPrice(0);
-        setSaving(0);
-        setUnits(1);
-        setDetail('');
-        setItemValid(false);
-        setDateValid(false);
-        setStoreValid(false);
+        recordContext.reset();
     };
 
     return (
-        <Modal isOpen={isOpen} toggle={toggle}>
-            <ModalHeader toggle={toggle}>Create New Record</ModalHeader>
+        <Modal isOpen={isOpen} toggle={resetEverything}>
+            <ModalHeader toggle={resetEverything}>{isCreate ? "Create New Record" : "Edit Record"}</ModalHeader>
             <ModalBody>
-                <Form onSubmit={saveRecord} id="recordForm">
+                <Form>
                     <FormGroup>
                     <Label for="item">Item</Label>
                     <Input
@@ -91,14 +99,15 @@ export const RecordModal = ({ itemList, storeList, isOpen, toggle, setRecords })
                         id="item"
                         name="item"
                         onChange={(e) => {
-                            setItem(e.target.value);
+                            recordContext.setItem(e.target.value);
                             setItemValid(false);
                         }}
                         invalid={invalidItem}
+                        defaultValue={recordContext.item}
                     >
                         <option></option>
-                        {itemList.map((item) => (
-                            <option>{item.name}</option>
+                        {itemList.map((item, index) => (
+                            <option key={index}>{item.name}</option>
                         ))}
                     </Input>
                     </FormGroup>
@@ -109,14 +118,15 @@ export const RecordModal = ({ itemList, storeList, isOpen, toggle, setRecords })
                         id="store"
                         name="store"
                         onChange={(e) => {
-                            setStore(e.target.value);
+                            recordContext.setStore(e.target.value);
                             setStoreValid(false);
                         }}
                         invalid={invalidStore}
+                        defaultValue={recordContext.store}
                     >
                         <option></option>
-                        {storeList.map((store) => (
-                            <option>{store.name}</option>
+                        {storeList.map((store, index) => (
+                            <option key={index}>{store.name}</option>
                         ))}
                     </Input>
                     </FormGroup>
@@ -128,10 +138,11 @@ export const RecordModal = ({ itemList, storeList, isOpen, toggle, setRecords })
                         placeholder="date placeholder"
                         type="date"
                         onChange={(e) => {
-                            setPurchaseDate(e.target.value);
+                            recordContext.setPurchaseDate(e.target.value);
                             setDateValid(false);
                         }}
                         invalid={invalidDate}
+                        defaultValue={recordContext.purchaseDate}
                         />
                     </FormGroup>
                     <FormGroup>
@@ -142,8 +153,8 @@ export const RecordModal = ({ itemList, storeList, isOpen, toggle, setRecords })
                         type="number"
                         step="0.1"
                         min="0"
-                        defaultValue="0"
-                        onChange={(e) => {setPrice(e.target.value)}}
+                        defaultValue={recordContext.price}
+                        onChange={(e) => {recordContext.setPrice(e.target.value)}}
                         />
                     </FormGroup>
                     <FormGroup>
@@ -154,8 +165,8 @@ export const RecordModal = ({ itemList, storeList, isOpen, toggle, setRecords })
                         type="number"
                         step="0.1"
                         min="0"
-                        defaultValue="0"
-                        onChange={(e) => {setSaving(e.target.value)}}
+                        defaultValue={recordContext.saving}
+                        onChange={(e) => {recordContext.setSaving(e.target.value)}}
                         />
                     </FormGroup>
                     <FormGroup>
@@ -165,8 +176,8 @@ export const RecordModal = ({ itemList, storeList, isOpen, toggle, setRecords })
                         name="units"
                         type="number"
                         min="1"
-                        defaultValue="1"
-                        onChange={(e) => {setUnits(e.target.value)}}
+                        defaultValue={recordContext.units}
+                        onChange={(e) => {recordContext.setUnits(e.target.value)}}
                         />
                     </FormGroup>
                     <FormGroup>
@@ -175,7 +186,7 @@ export const RecordModal = ({ itemList, storeList, isOpen, toggle, setRecords })
                         id="detail"
                         name="detail"
                         type="textarea"
-                        onChange={(e) => {setDetail(e.target.value)}}
+                        onChange={(e) => {recordContext.setDetail(e.target.value)}}
                         />
                     </FormGroup>
                 </Form>
@@ -188,60 +199,3 @@ export const RecordModal = ({ itemList, storeList, isOpen, toggle, setRecords })
         </Modal>
     )
 }
-
-// export class RecordModal extends Component {
-//     constructor(props) {
-//         super(props);
-//         this.state = {
-//             activeItem: this.props.activeItem,
-//             itemList: this.props.itemList,
-//             storeList: this.props.storeList,
-//         };
-//     }
-
-//     handleChange = (e) => {
-//         let { name, value } = e.target;
-
-//         const activeItem = { ...this.state.activeItem, [name]: value };
-//         const itemList = { ...this.state.itemList, [name]: value };
-//         const storeList = { ...this.state.storeList, [name]: value };
-
-//         this.setState({ activeItem, itemList, storeList });
-//     };
-
-//     render() {
-//         const { toggle, onSave } = this.props;
-
-//         return (
-//             <Modal isOpen={true} toggle={toggle}>
-//                 <ModalHeader toggle={toggle}>Create</ModalHeader>
-//                 <ModalBody>
-//                     <Form>
-//                         <FormGroup>
-//                         <Label for="Item Name">Item</Label>
-//                         <Input
-//                             type="select"
-//                             id="itemName"
-//                             name="itemName"
-//                             onChange={this.handleChange}
-//                             value={this.state.activeItem.item.name}
-//                         >
-//                             {this.state.itemList.map((item) => (
-//                                 <option>{item.name}</option>
-//                             ))}
-//                         </Input>
-//                         </FormGroup>
-//                     </Form>
-//                 </ModalBody>
-//                 <ModalFooter>
-//                 <Button
-//                     color="success"
-//                     onClick={() => onSave(this.state.activeItem)}
-//                 >
-//                     Save
-//                 </Button>
-//                 </ModalFooter>
-//             </Modal>
-//         );
-//     }
-// }
