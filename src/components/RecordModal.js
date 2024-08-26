@@ -187,6 +187,7 @@ export const RecordModal = ({ itemList, storeList, isOpen, toggle, setRecords, i
                         name="detail"
                         type="textarea"
                         onChange={(e) => {recordContext.setDetail(e.target.value)}}
+                        defaultValue={recordContext.detail}
                         />
                     </FormGroup>
                 </Form>

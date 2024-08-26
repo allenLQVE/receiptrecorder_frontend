@@ -1,7 +1,6 @@
 /* eslint-disable eqeqeq */
 import React, { useContext, useEffect } from 'react';
 import { useState } from 'react';
-import { Button } from 'reactstrap';
 import axios from "axios";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -22,7 +21,7 @@ export const RecordTable = ({ records, setRecords, openRecordModal }) => {
         const row = document.getElementById(e.currentTarget.value);
         
         // set the value from the selected row to the form
-        recordContext.setId(e.currentTarget.value)
+        recordContext.setId(e.currentTarget.value);
         recordContext.setItem(row.getElementsByClassName('itemName')[0].textContent);
         recordContext.setStore(row.getElementsByClassName('storeName')[0].textContent);
         recordContext.setPurchaseDate(row.getElementsByClassName('purchaseDate')[0].textContent);
@@ -33,7 +32,7 @@ export const RecordTable = ({ records, setRecords, openRecordModal }) => {
             recordContext.setDetail(row.getElementsByClassName('detail')[0].textContent);
         }
             
-        openRecordModal(false);
+        openRecordModal();
     }
 
     const removeRecord = (e) => {
@@ -52,7 +51,7 @@ export const RecordTable = ({ records, setRecords, openRecordModal }) => {
     
     return (
         <>
-            <table className="table table-bordered table-striped table-sm">
+            <table className={'table table-bordered table-striped table-responsive-sm'}>
                 <thead>
                     <tr>
                         <th>Item</th>
@@ -79,16 +78,16 @@ export const RecordTable = ({ records, setRecords, openRecordModal }) => {
                             <td key='units' className='units'>{row.units}</td>
                             <td key='unitPrice'>${(row.price / row.units).toFixed(2)}</td>
                             <td key='unitPriceSaving'>${((row.price - row.saving) / row.units).toFixed(2)}</td>
-                            <td key='paid'>${row.price - row.saving}</td>
+                            <td key='paid'>${(row.price - row.saving).toFixed(2)}</td>
                             <td key='detail' className='detail'>{row.detail}</td>
                             {/* add a col for removing or update record */}
                             <td key='action'>
-                                <Button className="mr-2" color="primary" onClick={editRecord} value={row.id}>
+                                <button className="btn btn-primary mr-2" onClick={editRecord} value={row.id}>
                                     <FontAwesomeIcon icon={faPen}/>
-                                </Button>
-                                <Button color="danger" onClick={removeRecord} value={row.id}>
+                                </button>
+                                <button className="btn btn-danger" onClick={removeRecord} value={row.id}>
                                     <FontAwesomeIcon icon={faTrashCan}/>
-                                </Button>
+                                </button>
                             </td>
                         </tr>
                     ))}
