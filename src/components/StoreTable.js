@@ -22,7 +22,7 @@ export const StoreTable = ({ stores, setStores, openStoreModal }) => {
     const toggleAlert = () => setAlert(!alert);
 
     const editStore = (e) => {
-        const row = document.getElementById(e.currentTarget.value);
+        const row = document.getElementById('store ' + e.currentTarget.value);
         
         // set the value from the selected row to the form
         storeContext.setId(e.currentTarget.value);
@@ -40,7 +40,7 @@ export const StoreTable = ({ stores, setStores, openStoreModal }) => {
     const removeStore = async (e) => {
         // make sure the store is not linking to any record
         const id = e.currentTarget.value;
-        const storeName = document.getElementById(id).getElementsByClassName('name')[0].textContent;
+        const storeName = document.getElementById('store ' + id).getElementsByClassName('name')[0].textContent;
         const data = {store:storeName}
         
         var empty = false
@@ -84,7 +84,7 @@ export const StoreTable = ({ stores, setStores, openStoreModal }) => {
                 </thead>
                 <tbody>
                     {sortedRows.map((row, index) => (
-                        <tr key={index} id={row.id}>
+                        <tr key={index} id={'store ' + row.id}>
                             <td key='name' className='name'>{row.name}</td>
                             <td key='address' className='address'>{row.address}</td>
                             <td key='desc' className='desc'>{row.desc}</td>

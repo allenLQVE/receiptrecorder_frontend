@@ -155,13 +155,13 @@ function App() {
                                 <button className="btn btn-primary mt-2" onClick={createModal}>Create</button>
                             </div>
                         </nav>
-                        {(records && recordTable) ? <RecordTable records={records} setRecords={setRecords} openRecordModal={editRecordModal} recordTable={recordTable}/> : null}
+                        {(records && recordTable && items && stores) ? <RecordTable records={records} setRecords={setRecords} openRecordModal={editRecordModal} recordTable={recordTable} items={items} stores={stores}/> : null}
                         {(items && itemTable) ? <ItemTable items={items} setItems={setItems} openItemModal={editItemModal} itemTable={itemTable}/> : null}
                         {(stores && storeTable) ? <StoreTable stores={stores} setStores={setStores} openStoreModal={editStoreModal} storeTable={storeTable}/> : null}
                     </div>
                 </div>
                 {(items && stores) ? (
-                    <RecordModal itemList={items} storeList={stores} isOpen={recordModal} toggle={toggleRecordModal} setRecords={setRecords} isCreate={isCreate}/>
+                    <RecordModal itemList={items} storeList={stores} isOpen={recordModal} toggle={toggleRecordModal} setRecords={setRecords} isCreate={isCreate} items={items} stores={stores} setItems={setItems} setStores={setStores}/>
                 ): null}
                 <ItemModal isOpen={itemModal} toggle={toggleItemModal} setItems={setItems} isCreate={isCreate} items={items}/>
                 <StoreModal isOpen={storeModal} toggle={toggleStoreModal} setStores={setStores} isCreate={isCreate} stores={stores}/>

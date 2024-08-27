@@ -22,7 +22,7 @@ export const ItemTable = ({ items, setItems, openItemModal }) => {
     const toggleAlert = () => setAlert(!alert);
 
     const editItem = (e) => {
-        const row = document.getElementById(e.currentTarget.value);
+        const row = document.getElementById('item ' + e.currentTarget.value);
         
         // set the value from the selected row to the form
         itemContext.setId(e.currentTarget.value);
@@ -40,7 +40,7 @@ export const ItemTable = ({ items, setItems, openItemModal }) => {
     const removeItem = async (e) => {
         // make sure the item is not linking to any record
         const id = e.currentTarget.value;
-        const itemName = document.getElementById(id).getElementsByClassName('name')[0].textContent;
+        const itemName = document.getElementById('item '+ id).getElementsByClassName('name')[0].textContent;
         const data = {item:itemName}
         
         var empty = false
@@ -84,7 +84,7 @@ export const ItemTable = ({ items, setItems, openItemModal }) => {
                 </thead>
                 <tbody>
                     {sortedRows.map((row, index) => (
-                        <tr key={index} id={row.id}>
+                        <tr key={index} id={'item ' + row.id}>
                             <td key='name' className='name'>{row.name}</td>
                             <td key='unit' className='unit'>{row.unit}</td>
                             <td key='desc' className='desc'>{row.desc}</td>
