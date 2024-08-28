@@ -7,6 +7,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashCan, faPen, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 import { RecordContext } from '../context/RecordContext';
 
+import './RecordTable.css';
+
 export const RecordTable = ({ records, setRecords, openRecordModal, items, stores }) => {
     const recordContext = useContext(RecordContext);
     const [sortedRows, setRows] = useState(records);
@@ -160,7 +162,7 @@ export const RecordTable = ({ records, setRecords, openRecordModal, items, store
                         <th>U.P. (W/Saving)</th>
                         <th>Paid</th>
                         <th>Note</th>
-                        <th>Actions</th>
+                        <th className='nowrap'>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
