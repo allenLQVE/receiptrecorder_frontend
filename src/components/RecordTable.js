@@ -89,7 +89,7 @@ export const RecordTable = ({ records, setRecords, openRecordModal, items, store
         recordContext.setPurchaseDate(row.getElementsByClassName('purchaseDate')[0].textContent);
         recordContext.setPrice(parseFloat(row.getElementsByClassName('price')[0].textContent.slice(1)));
         recordContext.setSaving(parseFloat(row.getElementsByClassName('saving')[0].textContent.slice(1)));
-        recordContext.setUnits(parseInt(row.getElementsByClassName('units')[0].textContent));
+        recordContext.setUnits(parseInt(row.getElementsByClassName('units')[0].textContent.split('/')[0]));
         if(row.getElementsByClassName('detail')[0].textContent != null){
             recordContext.setDetail(row.getElementsByClassName('detail')[0].textContent);
         }
@@ -173,7 +173,7 @@ export const RecordTable = ({ records, setRecords, openRecordModal, items, store
                             <td key='purchaseDate' className='purchaseDate'>{row.purchaseDate}</td>
                             <td key='price' className='price'>${row.price}</td>
                             <td key='saving' className='saving'>${row.saving}</td>
-                            <td key='units' className='units'>{row.units}</td>
+                            <td key='units' className='units'>{row.units + (row.item.unit ? ('/' + row.item.unit) : null)}</td>
                             <td key='unitPrice'>${(row.price / row.units).toFixed(2)}</td>
                             <td key='unitPriceSaving'>${((row.price - row.saving) / row.units).toFixed(2)}</td>
                             <td key='paid'>${(row.price - row.saving).toFixed(2)}</td>
