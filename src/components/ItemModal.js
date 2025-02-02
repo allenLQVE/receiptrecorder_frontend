@@ -15,6 +15,9 @@ import {
 import { ItemContext } from '../context/ItemContext';
 
 export const ItemModal = ({ isOpen, toggle, setItems, isCreate, items }) =>{
+    const AUTH = localStorage.getItem('auth');
+    const URL = process.env.REACT_APP_API_URL;
+
     const itemContext = useContext(ItemContext)
 
     // check if the input is valid
@@ -47,7 +50,11 @@ export const ItemModal = ({ isOpen, toggle, setItems, isCreate, items }) =>{
 
         if(isCreate){
             // create the new item
-            axios.post("http://localhost:8000/api/items/", data).then(
+            axios.post(URL + "items/", data, {
+                headers: {
+                    'Authorization': AUTH
+                }
+            }).then(
                 response => {
                     setItems(prev => [...prev, response.data]);
                 }
@@ -58,7 +65,11 @@ export const ItemModal = ({ isOpen, toggle, setItems, isCreate, items }) =>{
             // edit item
             data['id'] = itemContext.id;
 
-            axios.put(`http://localhost:8000/api/items/${itemContext.id}/`, data).then(
+            axios.put(`${URL}items/${itemContext.id}/`, data, {
+                headers: {
+                    'Authorization': AUTH
+                }
+            }).then(
                 response => {
                     setItems(items => items.map(item => item.id == itemContext.id ? response.data : item))
                 }

@@ -15,10 +15,13 @@ import {
 import { StoreContext } from '../context/StoreContext';
 
 export const StoreModal = ({ isOpen, toggle, setStores, isCreate, stores }) =>{
+    const AUTH = localStorage.getItem('auth');
+    const URL = process.env.REACT_APP_API_URL;
+
     const storeContext = useContext(StoreContext)
 
     // check if the input is valid
-    const [invalidName, setNameValid] = useState(false);
+    const [invalidName, setNameValid] = useState(false);    
 
     const resetEverything = () =>{
         storeContext.reset();
@@ -47,7 +50,11 @@ export const StoreModal = ({ isOpen, toggle, setStores, isCreate, stores }) =>{
 
         if(isCreate){
             // create the new store
-            axios.post("http://localhost:8000/api/stores/", data).then(
+            axios.post(URL + "stores/", data, {
+                headers: {
+                    'Authorization': AUTH
+                }
+            }).then(
                 response => {
                     setStores(prev => [...prev, response.data]);
                 }
@@ -58,7 +65,11 @@ export const StoreModal = ({ isOpen, toggle, setStores, isCreate, stores }) =>{
             // edit store
             data['id'] = storeContext.id;
 
-            axios.put(`http://localhost:8000/api/stores/${storeContext.id}/`, data).then(
+            axios.put(`${URL}stores/${storeContext.id}/`, data, {
+                headers:{
+                    'Authorization': AUTH
+                }
+            }).then(
                 response => {
                     setStores(stores => stores.map(store => store.id == storeContext.id ? response.data : store))
                 }

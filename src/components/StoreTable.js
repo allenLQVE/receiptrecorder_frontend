@@ -9,6 +9,9 @@ import { faTrashCan, faPen } from '@fortawesome/free-solid-svg-icons';
 import { StoreContext } from '../context/StoreContext';
 
 export const StoreTable = ({ stores, setStores, openStoreModal }) => {
+    const AUTH = localStorage.getItem('auth');
+    const URL = process.env.REACT_APP_API_URL;
+
     const storeContext = useContext(StoreContext);
     const [sortedRows, setRows] = useState(stores);
     const [alert, setAlert] = useState(false);
@@ -44,22 +47,29 @@ export const StoreTable = ({ stores, setStores, openStoreModal }) => {
         const data = {store:storeName}
         
         var empty = false
-        await axios.get('http://localhost:8000/api/records/getRecordByStore/', {params:data}).then(
+        await axios.get(URL + 'records/getRecordByStore/', {
+            params:data,
+            headers: {
+                'Authorization': AUTH
+            }
+        }).then(
             response => {
                 if(Object.keys(response.data).length != 0){
                     toggleAlert()
                 } else {
                     empty = true
                 }
-            }
+        }
         ).catch(error => {
             console.error(error)
         });
 
         if(empty){
-            axios.delete(
-                `http://localhost:8000/api/stores/${id}/`,
-            ).catch(error => {
+            axios.delete(`${URL}stores/${id}/`, {
+                headers: {
+                    'Authorization': AUTH
+                }
+            }).catch(error => {
                 console.error(error);
             });
 

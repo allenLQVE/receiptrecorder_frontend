@@ -16,6 +16,9 @@ import { ItemModal } from "./ItemModal";
 import { StoreModal } from "./StoreModal";
 
 export const RecordModal = ({ itemList, storeList, isOpen, toggle, setRecords, isCreate, items, stores, setItems, setStores }) =>{
+    const AUTH = localStorage.getItem('auth');
+    const URL = process.env.REACT_APP_API_URL;
+    
     const recordContext = useContext(RecordContext)
 
     // check if the input is valid
@@ -69,7 +72,11 @@ export const RecordModal = ({ itemList, storeList, isOpen, toggle, setRecords, i
 
         if(isCreate){
             // create the new record
-            axios.post("http://localhost:8000/api/records/", data).then(
+            axios.post(URL + "records/", data, {
+                headers: {
+                    'Authorization': AUTH
+                }
+            }).then(
                 response => {
                     setRecords(prev => [...prev, response.data]);
                 }
@@ -79,7 +86,11 @@ export const RecordModal = ({ itemList, storeList, isOpen, toggle, setRecords, i
         } else {
             data['id'] = recordContext.id;
 
-            axios.put(`http://localhost:8000/api/records/${recordContext.id}/`, data).then(
+            axios.put(`${URL}records/${recordContext.id}/`, data, {
+                headers: {
+                    'Authorization': AUTH
+                }
+            }).then(
                 response => {
                     setRecords(records => records.map(record => record.id == recordContext.id ? response.data : record))
                 }

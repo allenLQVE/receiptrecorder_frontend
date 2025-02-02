@@ -15,6 +15,9 @@ import { ItemProvider } from './context/ItemContext';
 import { StoreProvider } from './context/StoreContext';
 
 function App() {
+    const AUTH = localStorage.getItem('auth');
+    const URL = process.env.REACT_APP_API_URL;
+
     // data from api
     const [records, setRecords] = useState();
     const [items, setItems] = useState();
@@ -33,21 +36,33 @@ function App() {
 
     // loading data from api
     useEffect(() => {
-        axios.get('http://localhost:8000/api/records/').then(
+        axios.get(URL + 'records/', {
+            headers: {
+                'Authorization': AUTH
+            }
+        }).then(
             response => {
                 setRecords(response.data);
             }
         ).catch(error => {
             console.error(error);
         })
-        axios.get('http://localhost:8000/api/items/').then(
+        axios.get(URL + 'items/', {
+            headers: {
+                'Authorization': AUTH
+            }
+        }).then(
             response => {
                 setItems(response.data);
             }
         ).catch(error => {
             console.error(error);
         })
-        axios.get('http://localhost:8000/api/stores/').then(
+        axios.get(URL + 'stores/', {
+            headers: {
+                'Authorization': AUTH
+            }
+        }).then(
             response => {
                 setStores(response.data);
             }

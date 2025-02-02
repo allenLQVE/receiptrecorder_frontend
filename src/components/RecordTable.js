@@ -10,6 +10,9 @@ import { RecordContext } from '../context/RecordContext';
 import './RecordTable.css';
 
 export const RecordTable = ({ records, setRecords, openRecordModal, items, stores }) => {
+    const AUTH = localStorage.getItem('auth');
+    const URL = process.env.REACT_APP_API_URL;
+
     const recordContext = useContext(RecordContext);
     const [sortedRows, setRows] = useState(records);
     const [asc, setAsc] = useState(true);
@@ -98,8 +101,11 @@ export const RecordTable = ({ records, setRecords, openRecordModal, items, store
     }
 
     const removeRecord = (e) => {
-        axios.delete(
-            `http://localhost:8000/api/records/${e.currentTarget.value}/`,
+        axios.delete(`${URL}records/${e.currentTarget.value}/`, {
+            headers: {
+                'Authorization': AUTH
+            }
+        }
         ).catch(error => {
             console.error(error);
         });
