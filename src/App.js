@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import './App.css';
 
@@ -17,6 +18,7 @@ import { StoreProvider } from './context/StoreContext';
 function App() {
     const AUTH = localStorage.getItem('auth');
     const URL = process.env.REACT_APP_API_URL;
+    const navigate = useNavigate();
 
     // data from api
     const [records, setRecords] = useState();
@@ -36,6 +38,11 @@ function App() {
 
     // loading data from api
     useEffect(() => {
+        if (AUTH === undefined || AUTH === null) {
+            navigate("/");
+            return;
+        }
+
         axios.get(URL + 'records/', {
             headers: {
                 'Authorization': AUTH
