@@ -11,7 +11,7 @@ import './RecordTable.css';
 
 export const RecordTable = ({ records, setRecords, openRecordModal, items, stores }) => {
     const AUTH = localStorage.getItem('auth');
-    const URL = process.env.REACT_APP_API_URL;
+    const URL = process.env.REACT_APP_API_URL + "api/";
 
     const recordContext = useContext(RecordContext);
     const [sortedRows, setRows] = useState(records);

@@ -17,7 +17,7 @@ import { StoreProvider } from './context/StoreContext';
 
 function App() {
     const AUTH = localStorage.getItem('auth');
-    const URL = process.env.REACT_APP_API_URL;
+    const URL = process.env.REACT_APP_API_URL + "api/";
     const navigate = useNavigate();
 
     // data from api

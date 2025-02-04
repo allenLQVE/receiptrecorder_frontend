@@ -10,7 +10,7 @@ import { StoreContext } from '../context/StoreContext';
 
 export const StoreTable = ({ stores, setStores, openStoreModal }) => {
     const AUTH = localStorage.getItem('auth');
-    const URL = process.env.REACT_APP_API_URL;
+    const URL = process.env.REACT_APP_API_URL + "api/";
 
     const storeContext = useContext(StoreContext);
     const [sortedRows, setRows] = useState(stores);

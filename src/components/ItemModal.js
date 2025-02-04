@@ -16,7 +16,7 @@ import { ItemContext } from '../context/ItemContext';
 
 export const ItemModal = ({ isOpen, toggle, setItems, isCreate, items }) =>{
     const AUTH = localStorage.getItem('auth');
-    const URL = process.env.REACT_APP_API_URL;
+    const URL = process.env.REACT_APP_API_URL + "api/";
 
     const itemContext = useContext(ItemContext)
 

@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function Login(){
+    const URL = process.env.REACT_APP_API_URL;
+
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -12,7 +14,7 @@ function Login(){
     
     function handleLogin(e) {
         e.preventDefault();
-        axios.post("http://localhost:8000/login/", {
+        axios.post(URL+ "login/", {
             'username': username,
             'password': password
         }).then(
@@ -63,7 +65,7 @@ function Login(){
             return;
         }
 
-        axios.post("http://localhost:8000/register/", {
+        axios.post(URL + "register/", {
             'username': username,
             'password': password
         }).then(
