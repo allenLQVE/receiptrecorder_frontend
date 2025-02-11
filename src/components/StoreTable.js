@@ -41,6 +41,10 @@ export const StoreTable = ({ stores, setStores, openStoreModal }) => {
     }
 
     const removeStore = async (e) => {
+        if(!window.confirm("Are you sure to delete the store?")) {
+            return;
+        }
+
         // make sure the store is not linking to any record
         const id = e.currentTarget.value;
         const storeName = document.getElementById('store ' + id).getElementsByClassName('name')[0].textContent;

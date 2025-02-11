@@ -41,6 +41,10 @@ export const ItemTable = ({ items, setItems, openItemModal }) => {
     }
 
     const removeItem = async (e) => {
+        if(!window.confirm("Are you sure to delete the item?")) {
+            return;
+        }
+
         // make sure the item is not linking to any record
         const id = e.currentTarget.value;
         const itemName = document.getElementById('item '+ id).getElementsByClassName('name')[0].textContent;

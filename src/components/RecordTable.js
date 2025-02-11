@@ -101,6 +101,9 @@ export const RecordTable = ({ records, setRecords, openRecordModal, items, store
     }
 
     const removeRecord = (e) => {
+        if(!window.confirm("Are you sure to delete the record?")) {
+            return;
+        }
         axios.delete(`${URL}records/${e.currentTarget.value}/`, {
             headers: {
                 'Authorization': AUTH
