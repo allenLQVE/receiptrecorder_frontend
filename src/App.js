@@ -38,11 +38,6 @@ function App() {
 
     // loading data from api
     useEffect(() => {
-        if (AUTH === undefined || AUTH === null) {
-            navigate("/");
-            return;
-        }
-
         axios.get(URL + 'records/', {
             headers: {
                 'Authorization': AUTH
@@ -174,7 +169,10 @@ function App() {
                                         <h1 className="text-muted" id="storeTableTag">Stores</h1>
                                     </button>
                                 </div>
-                                <button className="btn btn-primary mt-2" onClick={createModal}>Create</button>
+                                <div>
+                                    <button className="btn btn-primary mt-2" onClick={createModal}>Create</button>
+                                    <button className="btn btn-secondary mt-2 ml-2" onClick={() => {navigate("/login");}} id='loginBtn'>Login</button>
+                                </div>
                             </div>
                         </nav>
                         {(records && recordTable && items && stores) ? <RecordTable records={records} setRecords={setRecords} openRecordModal={editRecordModal} recordTable={recordTable} items={items} stores={stores}/> : null}

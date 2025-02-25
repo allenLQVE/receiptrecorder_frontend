@@ -20,7 +20,7 @@ function Login(){
         }).then(
             response => {
                 localStorage.setItem('auth', 'Token ' + response.data.token);
-                navigate("app/")
+                navigate("app/");
             }
         ).catch(error => {
             setWarning("User name doesn't match with password.")
@@ -91,6 +91,10 @@ function Login(){
                 <div>
                     <button onClick={(e) => handleLogin(e)} className='btn btn-primary mr-3'>Login</button>
                     <button onClick={(e) => showRegister(e)} className='btn btn-secondary mr-3'>Register</button>
+                    
+                </div>
+                <div className='mt-2'>
+                    <button onClick={() => {navigate("/");}} className='btn btn-link mr-3'>Continue as a guest</button>
                 </div>
                 
         </div>
