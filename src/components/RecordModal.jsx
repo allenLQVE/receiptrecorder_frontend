@@ -14,6 +14,7 @@ import {
 import { RecordContext } from '../context/RecordContext';
 import { ItemModal } from "./ItemModal";
 import { StoreModal } from "./StoreModal";
+import WarningModal from "./WarningModal";
 
 export const RecordModal = ({ itemList, storeList, isOpen, toggle, setRecords, isCreate, items, stores, setItems, setStores }) =>{
     const AUTH = localStorage.getItem('auth');
@@ -31,6 +32,10 @@ export const RecordModal = ({ itemList, storeList, isOpen, toggle, setRecords, i
     const [storeModal, setStoreModal] = useState(false);
     const toggleItemModal = () => setItemModal(!itemModal);
     const toggleStoreModal = () => setStoreModal(!storeModal);
+
+    const [alert, setAlert] = useState(false);
+    const [alertBody, setAlertBody] = useState("");
+    const toggleAlert = () => setAlert(!alert);
 
     const resetEverything = () =>{
         recordContext.reset();
@@ -82,6 +87,11 @@ export const RecordModal = ({ itemList, storeList, isOpen, toggle, setRecords, i
                 }
             ).catch(error => {
                 console.error(error);
+                if (error.response.statusText === "Unauthorized") {
+                    setAlertBody("Please login to create a new record.");
+                    toggleAlert();
+                    // window.alert("")
+                }
             })
         } else {
             data['id'] = recordContext.id;
@@ -95,7 +105,12 @@ export const RecordModal = ({ itemList, storeList, isOpen, toggle, setRecords, i
                     setRecords(records => records.map(record => record.id == recordContext.id ? response.data : record))
                 }
             ).catch(error =>{
-                console.error(error)
+                console.error(error);
+                if (error.response.statusText === "Unauthorized") {
+                    setAlertBody("Please login to modify a record.");
+                    toggleAlert();
+                    // window.alert("Please login to modify a record.");
+                }
             })
         }
 
@@ -221,7 +236,7 @@ export const RecordModal = ({ itemList, storeList, isOpen, toggle, setRecords, i
             </Modal>
             <ItemModal isOpen={itemModal} toggle={toggleItemModal} setItems={setItems} isCreate={true} items={items}/>
             <StoreModal isOpen={storeModal} toggle={toggleStoreModal} setStores={setStores} isCreate={true} stores={stores}/>
+            <WarningModal isOpen={alert} toggle={toggleAlert} body={alertBody}/>
         </>
-        
     )
 }

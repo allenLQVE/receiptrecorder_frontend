@@ -2,11 +2,12 @@
 import React, { useContext, useEffect } from 'react';
 import { useState } from 'react';
 import axios from "axios";
-import { Modal, ModalBody, ModalHeader } from "reactstrap";
+// import { Modal, ModalBody, ModalHeader } from "reactstrap";
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashCan, faPen } from '@fortawesome/free-solid-svg-icons';
 import { StoreContext } from '../context/StoreContext';
+import WarningModal from './WarningModal';
 
 export const StoreTable = ({ stores, setStores, openStoreModal }) => {
     const AUTH = localStorage.getItem('auth');
@@ -14,15 +15,16 @@ export const StoreTable = ({ stores, setStores, openStoreModal }) => {
 
     const storeContext = useContext(StoreContext);
     const [sortedRows, setRows] = useState(stores);
+
     const [alert, setAlert] = useState(false);
+    const [alertBody, setAlertBody] = useState("");
+    const toggleAlert = () => setAlert(!alert);
 
     useEffect(() => {
         if(stores){
             setRows(stores);
         }
     }, [stores]);
-
-    const toggleAlert = () => setAlert(!alert);
 
     const editStore = (e) => {
         const row = document.getElementById('store ' + e.currentTarget.value);
@@ -59,7 +61,8 @@ export const StoreTable = ({ stores, setStores, openStoreModal }) => {
         }).then(
             response => {
                 if(Object.keys(response.data).length != 0){
-                    toggleAlert()
+                    setAlertBody("The store is linking to at least one record. Please remove the associating records first.");
+                    toggleAlert();
                 } else {
                     empty = true
                 }
@@ -73,15 +76,21 @@ export const StoreTable = ({ stores, setStores, openStoreModal }) => {
                 headers: {
                     'Authorization': AUTH
                 }
-            }).catch(error => {
+            }).then(
+                () => {
+                    setStores(
+                        stores.filter((store) => {
+                            return store.id != id;
+                        })
+                    )
+                }
+            ).catch(error => {
                 console.error(error);
+                if (error.response.statusText === "Unauthorized") {
+                    setAlertBody("Please login to delete a store.");
+                    toggleAlert()
+                }
             });
-
-            setStores(
-                stores.filter((store) => {
-                    return store.id != id;
-                })
-            )
         }
     };
     
@@ -114,14 +123,7 @@ export const StoreTable = ({ stores, setStores, openStoreModal }) => {
                     ))}
                 </tbody>
             </table>
-            <Modal isOpen={alert} toggle={toggleAlert}>
-                <ModalHeader className="bg-danger" toggle={toggleAlert}>
-                    Warning!
-                </ModalHeader>
-                <ModalBody>
-                    The store is linking to at least one record. Please remove the associating records first.
-                </ModalBody>
-            </Modal>
+            <WarningModal isOpen={alert} toggle={toggleAlert} body={alertBody}/>
         </>
     )
 }

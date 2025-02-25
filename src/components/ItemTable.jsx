@@ -2,7 +2,7 @@
 import React, { useContext, useEffect } from 'react';
 import { useState } from 'react';
 import axios from "axios";
-import { Modal, ModalBody, ModalHeader } from "reactstrap";
+import WarningModal from './WarningModal';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashCan, faPen } from '@fortawesome/free-solid-svg-icons';
@@ -14,15 +14,16 @@ export const ItemTable = ({ items, setItems, openItemModal }) => {
 
     const itemContext = useContext(ItemContext);
     const [sortedRows, setRows] = useState(items);
+    
     const [alert, setAlert] = useState(false);
+    const [alertBody, setAlertBody] = useState("");
+    const toggleAlert = () => setAlert(!alert);
 
     useEffect(() => {
         if(items){
             setRows(items);
         }
     }, [items]);
-
-    const toggleAlert = () => setAlert(!alert);
 
     const editItem = (e) => {
         const row = document.getElementById('item ' + e.currentTarget.value);
@@ -59,13 +60,14 @@ export const ItemTable = ({ items, setItems, openItemModal }) => {
         }).then(
             response => {
                 if(Object.keys(response.data).length != 0){
-                    toggleAlert()
+                    setAlertBody("The item is linking to at least one record. Please remove the associating records first.");
+                    toggleAlert();
                 } else {
                     empty = true
                 }
             }
         ).catch(error => {
-            console.error(error)
+            console.error(error);
         });
 
         if(empty){
@@ -73,15 +75,19 @@ export const ItemTable = ({ items, setItems, openItemModal }) => {
                 headers: {
                     'Authorization': AUTH
                 }
-            }).catch(error => {
+            }).then(
+                setItems(
+                    items.filter((item) => {
+                        return item.id != id;
+                    })
+                )
+            ).catch(error => {
                 console.error(error);
+                if (error.response.statusText === "Unauthorized") {
+                    setAlertBody("Please login to delete a new item.");
+                    toggleAlert();
+                }
             });
-
-            setItems(
-                items.filter((item) => {
-                    return item.id != id;
-                })
-            )
         }
     };
     
@@ -114,14 +120,7 @@ export const ItemTable = ({ items, setItems, openItemModal }) => {
                     ))}
                 </tbody>
             </table>
-            <Modal isOpen={alert} toggle={toggleAlert}>
-                <ModalHeader className="bg-danger" toggle={toggleAlert}>
-                    Warning!
-                </ModalHeader>
-                <ModalBody>
-                    The item is linking to at least one record. Please remove the associating records first.
-                </ModalBody>
-            </Modal>
+            <WarningModal isOpen={alert} toggle={toggleAlert} body={alertBody}/>
         </>
     )
 }

@@ -12,81 +12,95 @@ import {
     Input,
     Label,
 } from "reactstrap";
-import { StoreContext } from '../context/StoreContext';
+import { ItemContext } from '../context/ItemContext';
+import WarningModal from "./WarningModal";
 
-export const StoreModal = ({ isOpen, toggle, setStores, isCreate, stores }) =>{
+export const ItemModal = ({ isOpen, toggle, setItems, isCreate, items }) =>{
     const AUTH = localStorage.getItem('auth');
     const URL = process.env.REACT_APP_API_URL + "api/";
 
-    const storeContext = useContext(StoreContext)
+    const itemContext = useContext(ItemContext)
 
     // check if the input is valid
-    const [invalidName, setNameValid] = useState(false);    
+    const [invalidName, setNameValid] = useState(false);
+
+    const [alert, setAlert] = useState(false);
+    const [alertBody, setAlertBody] = useState("");
+    const toggleAlert = () => setAlert(!alert);
 
     const resetEverything = () =>{
-        storeContext.reset();
+        itemContext.reset();
         setNameValid(false);
         toggle();
     }
 
-    const saveStore = (e) =>{
+    const saveItem = (e) =>{
         // check if the input is valid
-        if(storeContext.name == ""){
+        if(itemContext.name == ""){
             setNameValid(true);
             return;
         }
-        for(var i in stores){
-            if(stores[i].name == storeContext.name && stores[i].id != storeContext.id){
+        for(var i in items){
+            if(items[i].name == itemContext.name && items[i].id != itemContext.id){
                 setNameValid(true);
                 return;
             }
         }
 
         const data = {
-            name: storeContext.name,
-            address: storeContext.address,
-            desc: storeContext.desc,
+            name: itemContext.name,
+            unit: itemContext.unit,
+            desc: itemContext.desc,
         }
 
         if(isCreate){
-            // create the new store
-            axios.post(URL + "stores/", data, {
+            // create the new item
+            axios.post(URL + "items/", data, {
                 headers: {
                     'Authorization': AUTH
                 }
             }).then(
                 response => {
-                    setStores(prev => [...prev, response.data]);
+                    setItems(prev => [...prev, response.data]);
                 }
             ).catch(error => {
                 console.error(error);
+                if (error.response.statusText === "Unauthorized") {
+                    setAlertBody("Please login to create a new item.");
+                    toggleAlert();
+                }
             })
         } else {
-            // edit store
-            data['id'] = storeContext.id;
+            // edit item
+            data['id'] = itemContext.id;
 
-            axios.put(`${URL}stores/${storeContext.id}/`, data, {
-                headers:{
+            axios.put(`${URL}items/${itemContext.id}/`, data, {
+                headers: {
                     'Authorization': AUTH
                 }
             }).then(
                 response => {
-                    setStores(stores => stores.map(store => store.id == storeContext.id ? response.data : store))
+                    setItems(items => items.map(item => item.id == itemContext.id ? response.data : item))
                 }
             ).catch(error =>{
-                console.error(error)
+                console.error(error);
+                if (error.response.statusText === "Unauthorized") {
+                    setAlertBody("Please login to modify items.");
+                    toggleAlert();
+                }
             })
         }
 
         toggle();
 
         // set values back to default
-        storeContext.reset();
+        itemContext.reset();
     };
 
     return (
+    <>
         <Modal isOpen={isOpen} toggle={resetEverything}>
-            <ModalHeader toggle={resetEverything}>{isCreate ? "Create New Store" : "Edit Store"}</ModalHeader>
+            <ModalHeader toggle={resetEverything}>{isCreate ? "Create New Item" : "Edit Item"}</ModalHeader>
             <ModalBody>
                 <Form>
                     <FormGroup>
@@ -96,24 +110,24 @@ export const StoreModal = ({ isOpen, toggle, setStores, isCreate, stores }) =>{
                         id="name"
                         name="name"
                         onChange={(e) => {
-                            storeContext.setName(e.target.value);
+                            itemContext.setName(e.target.value);
                             setNameValid(false);
                         }}
                         invalid={invalidName}
-                        defaultValue={storeContext.name}
+                        defaultValue={itemContext.name}
                     >
                     </Input>
                     </FormGroup>
                     <FormGroup>
-                    <Label for="address">Address</Label>
+                    <Label for="unit">Unit</Label>
                     <Input
-                        type="textarea"
-                        id="address"
-                        name="address"
+                        type="text"
+                        id="unit"
+                        name="unit"
                         onChange={(e) => {
-                            storeContext.setAddress(e.target.value);
+                            itemContext.setUnit(e.target.value);
                         }}
-                        defaultValue={storeContext.address}
+                        defaultValue={itemContext.unit}
                     >
                     </Input>
                     </FormGroup>
@@ -123,17 +137,19 @@ export const StoreModal = ({ isOpen, toggle, setStores, isCreate, stores }) =>{
                         id="desc"
                         name="desc"
                         type="textarea"
-                        onChange={(e) => {storeContext.setDesc(e.target.value)}}
-                        defaultValue={storeContext.desc}
+                        onChange={(e) => {itemContext.setDesc(e.target.value)}}
+                        defaultValue={itemContext.desc}
                         />
                     </FormGroup>
                 </Form>
             </ModalBody>
             <ModalFooter>
-            <Button color="success" onClick={saveStore}>
+            <Button color="success" onClick={saveItem}>
                 Save
             </Button>
             </ModalFooter>
         </Modal>
+        <WarningModal isOpen={alert} toggle={toggleAlert} body={alertBody}/>
+    </>
     )
 }

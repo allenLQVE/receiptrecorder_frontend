@@ -2,6 +2,7 @@
 import React, { useContext, useEffect } from 'react';
 import { useState } from 'react';
 import axios from "axios";
+import WarningModal from './WarningModal';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashCan, faPen, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
@@ -16,6 +17,10 @@ export const RecordTable = ({ records, setRecords, openRecordModal, items, store
     const recordContext = useContext(RecordContext);
     const [sortedRows, setRows] = useState(records);
     const [asc, setAsc] = useState(true);
+
+    const [alert, setAlert] = useState(false);
+    const [alertBody, setAlertBody] = useState("");
+    const toggleAlert = () => setAlert(!alert);
 
     useEffect(() => {
         if(records){
@@ -109,15 +114,23 @@ export const RecordTable = ({ records, setRecords, openRecordModal, items, store
                 'Authorization': AUTH
             }
         }
+        ).then(
+            () => {
+                setRecords(
+                    records.filter((record) => {
+                        return record.id != e.currentTarget.value;
+                    })
+                );
+            }
         ).catch(error => {
             console.error(error);
+            if (error.response.statusText === "Unauthorized") {
+                setAlertBody("Please login to delete a record.");
+                toggleAlert();
+            }
         });
 
-        setRecords(
-            records.filter((record) => {
-                return record.id != e.currentTarget.value;
-            })
-        )
+        
     };
     
     return (
@@ -200,6 +213,7 @@ export const RecordTable = ({ records, setRecords, openRecordModal, items, store
                     ))}
                 </tbody>
             </table>
+            <WarningModal isOpen={alert} toggle={toggleAlert} body={alertBody}/>
         </>
     )
 }
