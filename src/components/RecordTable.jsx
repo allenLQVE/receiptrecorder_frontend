@@ -106,22 +106,24 @@ export const RecordTable = ({ records, setRecords, openRecordModal, items, store
     }
 
     const removeRecord = (e) => {
+        const targetId = e.currentTarget.value
         if(!window.confirm("Are you sure to delete the record?")) {
             return;
         }
+
         axios.delete(`${URL}records/${e.currentTarget.value}/`, {
             headers: {
                 'Authorization': AUTH
             }
         }
-        ).then(
-            () => {
-                setRecords(
-                    records.filter((record) => {
-                        return record.id != e.currentTarget.value;
-                    })
-                );
-            }
+        ).then(() => {
+            setRecords(
+                records.filter((record) => {
+                    return record.id != targetId;
+                })
+            )
+        }
+            
         ).catch(error => {
             console.error(error);
             if (error.response.statusText === "Unauthorized") {
@@ -129,8 +131,6 @@ export const RecordTable = ({ records, setRecords, openRecordModal, items, store
                 toggleAlert();
             }
         });
-
-        
     };
     
     return (

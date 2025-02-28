@@ -20,7 +20,7 @@ function Login(){
         }).then(
             response => {
                 localStorage.setItem('auth', 'Token ' + response.data.token);
-                navigate("app/");
+                navigate("/");
             }
         ).catch(error => {
             setWarning("User name doesn't match with password.")
