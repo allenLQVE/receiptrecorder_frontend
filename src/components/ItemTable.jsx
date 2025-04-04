@@ -9,7 +9,7 @@ import { faTrashCan, faPen } from '@fortawesome/free-solid-svg-icons';
 import { ItemContext } from '../context/ItemContext';
 
 export const ItemTable = ({ items, setItems, openItemModal }) => {
-    const AUTH = localStorage.getItem('auth');
+    const AUTH = sessionStorage.getItem('auth');
     const URL = process.env.REACT_APP_API_URL + "api/";
 
     const itemContext = useContext(ItemContext);

@@ -10,7 +10,7 @@ import { StoreContext } from '../context/StoreContext';
 import WarningModal from './WarningModal';
 
 export const StoreTable = ({ stores, setStores, openStoreModal }) => {
-    const AUTH = localStorage.getItem('auth');
+    const AUTH = sessionStorage.getItem('auth');
     const URL = process.env.REACT_APP_API_URL + "api/";
 
     const storeContext = useContext(StoreContext);

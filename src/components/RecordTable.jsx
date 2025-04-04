@@ -11,7 +11,7 @@ import { RecordContext } from '../context/RecordContext';
 import './RecordTable.css';
 
 export const RecordTable = ({ records, setRecords, openRecordModal, items, stores }) => {
-    const AUTH = localStorage.getItem('auth');
+    const AUTH = sessionStorage.getItem('auth');
     const URL = process.env.REACT_APP_API_URL + "api/";
 
     const recordContext = useContext(RecordContext);

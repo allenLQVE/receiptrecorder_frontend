@@ -19,7 +19,7 @@ function Login(){
             'password': password
         }).then(
             response => {
-                localStorage.setItem('auth', 'Token ' + response.data.token);
+                sessionStorage.setItem('auth', 'Token ' + response.data.token);
                 navigate("/");
             }
         ).catch(error => {

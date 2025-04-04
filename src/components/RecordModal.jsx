@@ -17,7 +17,7 @@ import { StoreModal } from "./StoreModal";
 import WarningModal from "./WarningModal";
 
 export const RecordModal = ({ itemList, storeList, isOpen, toggle, setRecords, isCreate, items, stores, setItems, setStores }) =>{
-    const AUTH = localStorage.getItem('auth');
+    const AUTH = sessionStorage.getItem('auth');
     const URL = process.env.REACT_APP_API_URL + "api/";
     
     const recordContext = useContext(RecordContext)
